@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Choropleth Example 1 - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+
+
+<script type="text/javascript" src="comunas.js"></script>
+<script type="text/javascript" src="polls.js"></script>	
+</head>
+<body>
+
+
+
+<div id="mapid" style="width: 600px; height: 600px;"></div>
+
+<script type="text/javascript">
+coords = [], polls_sum = []
+polls_sum[0] = 0
+polls_sum[1] = 0
+polls_sum[2] = 0
+polls_sum[3] = 0
+polls_sum[5] = 0
+polls_sum[6] = 0
+polls_sum[12] = 0
+polls_sum[13] = 0
+polls_sum[4] = 0
+polls_sum[10] = 0
+polls_sum[8] = 0
+polls_sum[14] = 0
+polls_sum[7] = 0
+polls_sum[11] = 0
+polls_sum[9] = 0
+polls_sum[15] = 0
+line_sum = 0
+for (x in polls.features){
+	line_sum += 1
+	latlon = polls.features[x].properties.latitud + "," + polls.features[x].properties.longitud
+	coords[latlon] = 1
+	switch (latlon) {
+		case "-34.706,-58.466": 
+			// otros
+			polls_sum[0] += polls.features[x].properties.cantidad
+			break;
+		case "-34.665107,-58.513913": 
+			// comuna 9 id 5
+			polls_sum[5] += polls.features[x].properties.cantidad
+			break;
+		case "-34.693438,-58.476251": 
+			// comuna 8 id 12
+			polls_sum[12] += polls.features[x].properties.cantidad
+			break;
+		case "-34.657675,-58.430406": 
+			// comuna 8 id 12
+			polls_sum[12] += polls.features[x].properties.cantidad
+			break;
+		case "-34.653279,-58.382039": 
+			// comuna 4 id 13
+			polls_sum[13] += polls.features[x].properties.cantidad
+			break;
+		case "-34.637576,-58.529494": 
+			// comuna 9 id 5
+			polls_sum[5] += polls.features[x].properties.cantidad
+			break;
+		case "-34.633299,-58.468594": 
+			// comuna 7 id 4
+			polls_sum[4] += polls.features[x].properties.cantidad
+			break;
+		case "-34.618036,-58.410236": 
+			// comuna 3 id 10
+			polls_sum[10] += polls.features[x].properties.cantidad
+			break;
+		case "-34.60855,-58.372951": 
+			// comuna 1 id 14
+			polls_sum[14] += polls.features[x].properties.cantidad
+			break;
+		case "-34.583119,-58.515753": 
+			// comuna 11 id 7
+			polls_sum[7] += polls.features[x].properties.cantidad
+			break;
+		case "-34.589125,-58.484717": 
+			// comuna 15 id 11
+			polls_sum[11] += polls.features[x].properties.cantidad
+			break;
+		case "-34.579632,-58.427733": 
+			// comuna 14 id 9
+			polls_sum[9] += polls.features[x].properties.cantidad
+			break;
+		case "-34.588796,-58.38152": 
+			// comuna 1 id 14
+			polls_sum[14] += polls.features[x].properties.cantidad
+			break;
+		case "-34.53698,-58.470968": 
+			// comuna 13 id 15
+			polls_sum[15] += polls.features[x].properties.cantidad
+			break;
+		default:
+			polls_sum[0] += polls.features[x].properties.cantidad
+			break;
+	}
+}
+console.log(polls_sum)
+
+function getColor(d) {
+	return d > 5000000 ? '#800026' :
+		d > 1500000 ? '#BD0026' :
+		d > 2000000 ? '#E31A1C' :
+		d > 210000  ? '#FC4E2A' :
+		d > 2400000   ? '#FD8D3C' :
+		d > 3000000  ? '#FEB24C' :
+		d > 5000000   ? '#FED976' :
+		          '#FFEDA0';
+}
+
+function style(feature) {
+    return {
+        fillColor: getColor(feature.properties.num_polls),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+// update comunas with number of polls for each comuna
+for(c in comunas.features){
+	var id = comunas.features[c].properties.ID
+	comunas.features[c].properties.num_polls = polls_sum[id]
+}
+	var mymap = L.map('mapid').setView([-34.6026, -58.4527], 11);
+
+	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox/streets-v11',
+		tileSize: 512,
+		zoomOffset: -1
+	}).addTo(mymap);
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("You clicked the map at " + e.latlng.toString())
+			.openOn(mymap);
+	}
+
+	mymap.on('click', onMapClick);
+
+
+	var geojson = L.geoJson(comunas, {style: style}).addTo(mymap);
+
+</script>
+
+</body>
+</html>
